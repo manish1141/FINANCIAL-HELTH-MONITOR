@@ -289,6 +289,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // UI Delete All Transactions Logic
+    const btnDeleteAll = document.getElementById('btn-delete-all');
+    if (btnDeleteAll) {
+        btnDeleteAll.addEventListener('click', async () => {
+            if (confirm('Are you sure you want to delete ALL transactions? This cannot be undone.')) {
+                try {
+                    const response = await fetch('../backend/transaction.php?action=delete_all', { method: 'POST' });
+                    const result = await response.json();
+                    if (result.success) {
+                        alert(result.message);
+                        // Refresh dashboard
+                        state.transactions = [];
+                        updateDashboard();
+                        // Reset stat displays manually for immediate feedback
+                        document.getElementById('total-balance').textContent = formatCurrency(0);
+                        document.getElementById('total-income').textContent = formatCurrency(0);
+                        document.getElementById('total-expenses').textContent = formatCurrency(0);
+                        document.getElementById('total-debt').textContent = formatCurrency(0);
+                    } else {
+                        alert('Error: ' + result.error);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('An error occurred while deleting transactions.');
+                }
+            }
+        });
+    }
+
     // Chatbot Logic
     const btnToggleChat = document.getElementById('chatbot-toggle');
     const chatPanel = document.getElementById('chat-panel');

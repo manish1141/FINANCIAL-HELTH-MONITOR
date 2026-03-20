@@ -162,6 +162,9 @@ elseif($score > 50) { $health_status = 'Good'; $health_class = 'text-warning'; }
                     <button class="btn btn-primary" id="btn-add-transaction">
                         <i class='bx bx-plus'></i> Add Entry
                     </button>
+                    <button class="btn btn-danger" id="btn-delete-all" style="background: var(--accent-danger); border: none; color: white;">
+                        <i class='bx bx-trash'></i> Delete All
+                    </button>
                     <div class="theme-toggle" id="theme-toggle">
                         <i class='bx bx-moon'></i>
                     </div>

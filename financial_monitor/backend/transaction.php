@@ -36,6 +36,15 @@ if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(['success' => false, 'error' => 'Invalid input']);
     }
 } 
+// Handle deleting all transactions for the current user
+elseif ($action === 'delete_all') {
+    $stmt = $conn->prepare("DELETE FROM transactions WHERE user_id = ?");
+    if ($stmt->execute([$user_id])) {
+        echo json_encode(['success' => true, 'message' => 'All transactions deleted successfully']);
+    } else {
+        echo json_encode(['success' => false, 'error' => 'Failed to delete transactions']);
+    }
+}
 // Handle fetching transactions for the dashboard
 elseif ($action === 'get') {
     $stmt = $conn->prepare("SELECT id, title, category, amount, type, transaction_date as date FROM transactions WHERE user_id = ? ORDER BY transaction_date DESC");
