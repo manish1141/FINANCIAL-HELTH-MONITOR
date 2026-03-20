@@ -219,7 +219,7 @@ elseif($score > 50) { $health_status = 'Good'; $health_class = 'text-warning'; }
                                 <i class='bx bx-credit-card-alt'></i>
                             </div>
                         </div>
-                        <h2 id="total-debt">$<?= number_format($total_debt, 2) ?></h2>
+                        <h2 id="total-debt">₹<?= number_format($total_debt, 2) ?></h2>
                         <div class="stat-trend positive">
                             <i class='bx bx-down-arrow-alt'></i>
                             <span>Updated just now</span>
@@ -397,7 +397,7 @@ elseif($score > 50) { $health_status = 'Good'; $health_class = 'text-warning'; }
                     <div class="form-group">
                         <label>Amount</label>
                         <div class="input-with-icon">
-                            <i class='bx bx-dollar'></i>
+                            <i class='bx bx-rupee'></i>
                             <input type="number" name="amount" id="t-amount" required placeholder="0.00" step="0.01">
                         </div>
                     </div>
