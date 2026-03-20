@@ -46,6 +46,26 @@ elseif ($action === 'delete_all') {
     }
 }
 }
+// Handle updating a single transaction
+elseif ($action === 'update') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $id = intval($data['id'] ?? 0);
+    $title = trim($data['title'] ?? '');
+    $category = trim($data['category'] ?? '');
+    $amount = floatval($data['amount'] ?? 0);
+    $type = trim($data['type'] ?? '');
+
+    if ($id > 0 && $title && $category && $amount > 0 && in_array($type, ['income', 'expense', 'debt'])) {
+        $stmt = $conn->prepare("UPDATE transactions SET title = ?, category = ?, amount = ?, type = ? WHERE id = ? AND user_id = ?");
+        if ($stmt->execute([$title, $category, $amount, $type, $id, $user_id])) {
+            echo json_encode(['success' => true, 'message' => 'Transaction updated successfully']);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Failed to update transaction']);
+        }
+    } else {
+        echo json_encode(['success' => false, 'error' => 'Invalid input data']);
+    }
+}
 // Handle deleting a single transaction
 elseif ($action === 'delete') {
     $id = intval($_GET['id'] ?? 0);

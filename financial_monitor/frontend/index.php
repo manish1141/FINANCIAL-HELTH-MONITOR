@@ -434,6 +434,56 @@ elseif($score > 50) { $health_status = 'Good'; $health_class = 'text-warning'; }
         </div>
     </div>
 
+    <!-- Edit Transaction Modal -->
+    <div class="modal-overlay" id="edit-transaction-modal">
+        <div class="modal glass-panel">
+            <div class="modal-header">
+                <h3>Edit Transaction</h3>
+                <i class='bx bx-x close-modal' data-modal="edit-transaction-modal"></i>
+            </div>
+            <div class="modal-body">
+                <form id="form-edit-transaction">
+                    <input type="hidden" name="id" id="edit-t-id">
+                    <div class="form-group">
+                        <label>Type</label>
+                        <div class="radio-group row">
+                            <label><input type="radio" name="type" id="edit-type-income" value="income"> <span>Income</span></label>
+                            <label><input type="radio" name="type" id="edit-type-expense" value="expense"> <span>Expense</span></label>
+                            <label><input type="radio" name="type" id="edit-type-debt" value="debt"> <span>Debt Repayment</span></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <div class="input-with-icon">
+                            <i class='bx bx-rupee'></i>
+                            <input type="number" name="amount" id="edit-t-amount" required placeholder="0.00" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" name="title" id="edit-t-desc" required placeholder="e.g. Salary, Groceries">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select name="category" id="edit-t-category" class="glass-select">
+                            <option value="salary">Salary</option>
+                            <option value="food">Food & Dining</option>
+                            <option value="housing">Housing</option>
+                            <option value="transport">Transportation</option>
+                            <option value="utilities">Utilities</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-actions mt-4">
+                        <button type="button" class="btn btn-outline close-modal" data-modal="edit-transaction-modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Transaction</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Pass PHP data to JS -->
     <script>
         window.INITIAL_TRANSACTIONS = <?= json_encode($transactions) ?>;

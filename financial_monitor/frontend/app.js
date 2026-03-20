@@ -86,6 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </td>
                 <td><span class="badge ${badgeClass}">Completed</span></td>
                 <td>
+                    <button class="btn-edit-single" data-id="${t.id}" style="background: none; border: none; color: var(--accent-primary); cursor: pointer; font-size: 1.2rem; margin-right: 10px;">
+                        <i class='bx bx-pencil'></i>
+                    </button>
                     <button class="btn-delete-single" data-id="${t.id}" style="background: none; border: none; color: var(--accent-danger); cursor: pointer; font-size: 1.2rem;">
                         <i class='bx bx-trash'></i>
                     </button>
@@ -128,6 +131,29 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         }
                     } catch (err) { console.error(err); }
+                }
+            });
+        });
+
+        // Add event listeners for single edit buttons
+        document.querySelectorAll('.btn-edit-single').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.dataset.id;
+                const t = state.transactions.find(item => item.id == id);
+                if (t) {
+                    // Populate modal
+                    document.getElementById('edit-t-id').value = t.id;
+                    document.getElementById('edit-t-amount').value = t.amount;
+                    document.getElementById('edit-t-desc').value = t.title;
+                    document.getElementById('edit-t-category').value = t.category;
+                    
+                    // Set radio button
+                    if (t.type === 'income') document.getElementById('edit-type-income').checked = true;
+                    else if (t.type === 'expense') document.getElementById('edit-type-expense').checked = true;
+                    else if (t.type === 'debt') document.getElementById('edit-type-debt').checked = true;
+
+                    // Show modal
+                    document.getElementById('edit-transaction-modal').classList.add('active');
                 }
             });
         });
@@ -330,6 +356,41 @@ document.addEventListener('DOMContentLoaded', () => {
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalText;
+            }
+        });
+    }
+
+    // Handle Edit Form Submission
+    const formEditTransaction = document.getElementById('form-edit-transaction');
+    if (formEditTransaction) {
+        formEditTransaction.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(formEditTransaction);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('../backend/transaction.php?action=update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    // Refresh data
+                    const res = await fetch('../backend/transaction.php?action=get');
+                    const getResult = await res.json();
+                    if (getResult.transactions) {
+                        state.transactions = getResult.transactions;
+                        updateDashboard();
+                        refreshStatsNatively();
+                    }
+                    document.getElementById('edit-transaction-modal').classList.remove('active');
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('An error occurred while updating the transaction.');
             }
         });
     }
