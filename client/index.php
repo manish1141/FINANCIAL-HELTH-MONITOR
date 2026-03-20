@@ -1,5 +1,5 @@
 <?php
-require_once 'config.php';
+require_once '../server/config.php';
 require_login();
 
 $user_id = $_SESSION['user_id'];
@@ -142,7 +142,7 @@ elseif($score > 50) { $health_status = 'Good'; $health_class = 'text-warning'; }
                         <span class="name"><?= htmlspecialchars($_SESSION['user_name']) ?></span>
                         <span class="plan">Pro Member</span>
                     </div>
-                    <a href="logout.php" style="color:var(--text-secondary);"><i class='bx bx-log-out'></i></a>
+                    <a href="../server/logout.php" style="color:var(--text-secondary);"><i class='bx bx-log-out'></i></a>
                 </div>
             </div>
         </nav>
