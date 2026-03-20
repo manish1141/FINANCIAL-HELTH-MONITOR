@@ -269,6 +269,7 @@ elseif($score > 50) { $health_status = 'Good'; $health_class = 'text-warning'; }
                                     <th>Date</th>
                                     <th>Amount</th>
                                     <th>Status</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody id="recent-transactions-body">
@@ -281,8 +282,11 @@ elseif($score > 50) { $health_status = 'Good'; $health_class = 'text-warning'; }
 
             <!-- Other Views (Transactions, Budget, Reports) would go here, hidden by default -->
             <div class="view-section" id="view-transactions" style="display: none;">
-                <div class="section-header">
+                <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
                     <h2>All Transactions</h2>
+                    <button class="btn btn-danger" id="btn-delete-all-transactions" style="background: var(--accent-danger); border: none; color: white; padding: 10px 20px; border-radius: 8px;">
+                        <i class='bx bx-trash'></i> Delete All Transactions
+                    </button>
                 </div>
                 <div class="transactions-section glass-panel mt-4">
                     <div class="table-responsive">
@@ -294,6 +298,7 @@ elseif($score > 50) { $health_status = 'Good'; $health_class = 'text-warning'; }
                                     <th>Date</th>
                                     <th>Amount</th>
                                     <th>Status</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody id="all-transactions-body">

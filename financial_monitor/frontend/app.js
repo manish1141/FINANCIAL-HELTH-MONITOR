@@ -85,6 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount)}
                 </td>
                 <td><span class="badge ${badgeClass}">Completed</span></td>
+                <td>
+                    <button class="btn-delete-single" data-id="${t.id}" style="background: none; border: none; color: var(--accent-danger); cursor: pointer; font-size: 1.2rem;">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                </td>
             `;
             return tr;
         };
@@ -102,6 +107,46 @@ document.addEventListener('DOMContentLoaded', () => {
                 tbodyAll.appendChild(renderRow(t));
             });
         }
+        
+        // Add event listeners for single delete buttons
+        document.querySelectorAll('.btn-delete-single').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const id = btn.dataset.id;
+                if (confirm('Delete this transaction?')) {
+                    try {
+                        const response = await fetch(`../backend/transaction.php?action=delete&id=${id}`, { method: 'POST' });
+                        const result = await response.json();
+                        if (result.success) {
+                            // Refresh data
+                            const res = await fetch('../backend/transaction.php?action=get');
+                            const getResult = await res.json();
+                            if (getResult.transactions) {
+                                state.transactions = getResult.transactions;
+                                updateDashboard();
+                                // Also update core stats
+                                refreshStatsNatively();
+                            }
+                        }
+                    } catch (err) { console.error(err); }
+                }
+            });
+        });
+    };
+
+    // Helper to refresh stats natively without page reload
+    const refreshStatsNatively = () => {
+        let totalInc = 0; let totalExp = 0; let totalDebt = 0;
+        state.transactions.forEach(t => {
+            if (t.type === 'income') totalInc += t.amount;
+            if (t.type === 'expense') totalExp += t.amount;
+            if (t.type === 'debt') totalDebt += t.amount;
+        });
+        const totalBal = totalInc - totalExp - totalDebt;
+
+        document.getElementById('total-balance').textContent = formatCurrency(totalBal);
+        document.getElementById('total-income').textContent = formatCurrency(totalInc);
+        document.getElementById('total-expenses').textContent = formatCurrency(totalExp);
+        document.getElementById('total-debt').textContent = formatCurrency(totalDebt);
     };
 
     const renderBudgets = () => {
@@ -289,34 +334,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // UI Delete All Transactions Logic
-    const btnDeleteAll = document.getElementById('btn-delete-all');
-    if (btnDeleteAll) {
-        btnDeleteAll.addEventListener('click', async () => {
-            if (confirm('Are you sure you want to delete ALL transactions? This cannot be undone.')) {
-                try {
-                    const response = await fetch('../backend/transaction.php?action=delete_all', { method: 'POST' });
-                    const result = await response.json();
-                    if (result.success) {
-                        alert(result.message);
-                        // Refresh dashboard
-                        state.transactions = [];
-                        updateDashboard();
-                        // Reset stat displays manually for immediate feedback
-                        document.getElementById('total-balance').textContent = formatCurrency(0);
-                        document.getElementById('total-income').textContent = formatCurrency(0);
-                        document.getElementById('total-expenses').textContent = formatCurrency(0);
-                        document.getElementById('total-debt').textContent = formatCurrency(0);
-                    } else {
-                        alert('Error: ' + result.error);
+    // UI Delete All Transactions Logic (Unified)
+    const setupDeleteAll = (btnId) => {
+        const btn = document.getElementById(btnId);
+        if (btn) {
+            btn.addEventListener('click', async () => {
+                if (confirm('Are you sure you want to delete ALL transactions? This cannot be undone.')) {
+                    try {
+                        const response = await fetch('../backend/transaction.php?action=delete_all', { method: 'POST' });
+                        const result = await response.json();
+                        if (result.success) {
+                            alert(result.message);
+                            state.transactions = [];
+                            updateDashboard();
+                            refreshStatsNatively();
+                        } else {
+                            alert('Error: ' + result.error);
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert('An error occurred while deleting transactions.');
                     }
-                } catch (err) {
-                    console.error(err);
-                    alert('An error occurred while deleting transactions.');
                 }
-            }
-        });
-    }
+            });
+        }
+    };
+
+    setupDeleteAll('btn-delete-all');               // Header button
+    setupDeleteAll('btn-delete-all-transactions');    // Transactions view button
 
     // Chatbot Logic
     const btnToggleChat = document.getElementById('chatbot-toggle');

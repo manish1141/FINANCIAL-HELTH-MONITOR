@@ -45,6 +45,21 @@ elseif ($action === 'delete_all') {
         echo json_encode(['success' => false, 'error' => 'Failed to delete transactions']);
     }
 }
+}
+// Handle deleting a single transaction
+elseif ($action === 'delete') {
+    $id = intval($_GET['id'] ?? 0);
+    if ($id > 0) {
+        $stmt = $conn->prepare("DELETE FROM transactions WHERE id = ? AND user_id = ?");
+        if ($stmt->execute([$id, $user_id])) {
+            echo json_encode(['success' => true, 'message' => 'Transaction deleted successfully']);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Failed to delete transaction']);
+        }
+    } else {
+        echo json_encode(['success' => false, 'error' => 'Invalid transaction ID']);
+    }
+}
 // Handle fetching transactions for the dashboard
 elseif ($action === 'get') {
     $stmt = $conn->prepare("SELECT id, title, category, amount, type, transaction_date as date FROM transactions WHERE user_id = ? ORDER BY transaction_date DESC");
